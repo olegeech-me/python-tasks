@@ -1,0 +1,6 @@
+deque
+defaultdict
+namedtuple
+
+# not from collections, but:
+any

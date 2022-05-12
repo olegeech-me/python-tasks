@@ -1,0 +1,150 @@
+
+.. _openstack_control_plane_longevity_report_mcp_{{ mcp_version }}:
+
+**********************************************************
+OpenStack control plane longevity report for MCP {{ mcp_version }}
+**********************************************************
+
+:Abstract:
+
+  This document includes OpenStack control plane longevity test results for MCP version {{ mcp_version }}.
+  All tests have been performed regarding
+  :ref:`openstack_control_plane_longevity_test_plan`
+
+
+Environment description
+=======================
+
+Hardware description
+--------------------
+
+MCP cluster was deployed on top of internal Mirantis OpenStack cluster (FIXME: internal-cloud-v2-us).
+The following flavor were used:
+
+.. table:: Flavors which were used to spawn MCP cluster
+
+   +----------------+------------------------+------------+----------------+
+   |DevCloud flavor |CPU vCores per instance |Memory (GB) |Disk space (GB) |
+   +================+========================+============+================+
+{%- for flavor in flavors -%}
+  {% for key, value in flavor.items() %}
+   {{ "|%-16s|%-24s|%-12s|%-16s|"|format(cluster_size + '.' + key, value.vcpu, value.mem, value.disk) }}
+   +----------------+------------------------+------------+----------------+
+  {%- endfor -%}
+{%- endfor %}
+
+
+The following overcommmit ratios are set for compute nodes of underlay OpenStack cluster:
+
+.. table:: overcommit ratios of underlay OpenStack
+
+   +-----------------+-----------------+
+   |Type of resource |Overcommit ratio |
+   +=================+=================+
+   |CPU_OVERCOMMIT   |FIXME            |
+   +-----------------+-----------------+
+   |RAM_OVERCOMMIT   |FIXME            |
+   +-----------------+-----------------+
+   |DISK_OVERCOMMIT  |FIXME            |
+   +-----------------+-----------------+
+
+Software description
+--------------------
+
+Initial context from `Cookiecutter initial context`_ application was used to generate MCP cluster model.
+
+Deployment testing
+==================
+
+Time which was spend for deployment:
+
+.. image:: raw_results/deployment-time.png
+      :scale: 60
+
+
+Functional testing
+==================
+
+To be sure that cluster works fine after deployment functional testing was performed using Rally scenarios with small
+number of "times" and "concurrency".
+
+| :download:`report-rally-nova.html <raw_results/functional-test-results.html>`
+
+Testing process
+===============
+
+`Rally`_ tool was used to test the environment. `Rally`_ scenarios from `Rally scenarios`_ application were running at
+the same time. `Rally`_ job parameters from `Rally job parameters`_ application were used.
+
+As a result of this part we got the following HTML files:
+{% for i in range(test_runs) %}
+From test run #{{ i + 1 }}
+
+  {% for component in test_components %}
+| :download:`report-rally-{{ component }}-{{ i + 1 }}.html <raw_results/report-rally-{{ component }}-{{ i + 1 }}.html>`
+  {%- endfor %}
+{% endfor %}
+
+Test results
+============
+{% for i in range(test_runs) %}
+
+Test run #{{ i + 1 }}
+-----------
+
+FIX OR DELETEME: During the #{{ i + 1 }} run the following issues were found ...
+{% for component in test_components %}
+
+{{ component|capitalize }}
+{% for num in range(component|length) -%}`{% endfor %}
+
+.. image:: raw_results/{{ component }}-overview-{{ i + 1 }}.png
+      :scale: 100
+
+.. image:: raw_results/{{ component }}-details-{{ i + 1 }}.png
+      :scale: 100
+
+  {%- endfor %}
+{% endfor %}
+
+Product issues which have been found during the tests
+=====================================================
+
+.. table:: Product issues which have been found during the tests
+
+ +-------------------------------+---------------------------------------------+
+ |Issue description              |Root cause, Link                             |
+ +===============================+=============================================+
+ || FIXME OR DELETEME            || FIXME OR DELETEME                          |
+ +-------------------------------+---------------------------------------------+
+
+Applications
+============
+
+Cookiecutter initial context
+----------------------------
+
+.. literalinclude:: configs/MCP/initial_context.yaml
+    :language: yaml
+
+Rally job parameters
+--------------------
+
+.. literalinclude:: configs/rally/job-params-long.yaml
+    :language: yaml
+
+Rally scenarios
+---------------
+{% for component in test_components %}
+- {{ component|capitalize }}
+
+.. literalinclude:: configs/rally/{{ component }}.yaml
+    :language: yaml
+{% endfor %}
+
+.. references:
+
+.. _Rally: https://rally.readthedocs.io
+.. _PROD-26960: https://mirantis.jira.com/browse/PROD-26960
+.. _PROD-25130: https://mirantis.jira.com/browse/PROD-25130
+.. _PROD-27159: https://mirantis.jira.com/browse/PROD-27159
