@@ -1,0 +1,42 @@
+* Exercise 3 ( OOP )
+
+Hint: storage = {(1,0): 100}
+
+1. Create 'Matrix' class. Class stores values to a table
+   Usage:
+
+	a) Only non-zero values will be stored
+   	b) len(m) - returns number of non-zero values
+   	c) saves() - how many values are empty ( size - len ) 
+   	d) Object can be used as iterator
+   	c) You have to implement addition, but only with matrices with the same geometry ( rows and cols ) 
+           If the geometry is different => ValueError 
+	d) Matrix supports two file operations
+		- store() - stores matrix to 'jmeno_matice.matrix' file
+		- load() -  loads matrix from file
+
+	m = Matrix('tab', 5,4) # Create new 5x4 table ( 5 rows and 4 columns )   
+	m[1,0] = 100   # Store 100 to (1,0)
+	print(m[1,0])  # 100
+	print(m)       # Print whole table ( including zero elements )
+	
+	== Table 'tab': 5 x 4 ==
+	0   0 0 0 
+	100 0 0 0 
+	0   0 0 0
+	0   0 0 0
+	0   0 0 0
+	= Number of non-zero elements: 1
+
+	len(m)         # 1
+	m.saves()      # 19
+	m = Matrix('tab1', 3, 3)
+	n = Matrix('tab2', 3, 3)
+	x = Matrix('tab3', 4, 3)
+	z = m + n # OK, geometries are the same
+	z = m + x # ValueError, different geometries
+
+	m.store()	# Stores data to 'tab.matrix'
+	m.load()	# Loads data from 'tab.matrix'
+
+   

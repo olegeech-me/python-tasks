@@ -1,0 +1,98 @@
+* Exercise 4 ( Decorators )
+
+1. Create decorator 'trace'
+
+	@trace(msg='TRACE')
+	def upperCase(string):
+		return string.upper()
+
+	upperCase('hello')
+
+        # output:
+	TRACE: function 'upperCase'
+	TRACE: number of parameters: 1
+	TRACE: runtime ( 12 usec )
+
+2. Create decorator 'times' that runs decorated function N-times
+
+
+	@times(2)
+	def hello():
+	   print('Hello')
+
+	# Output
+   	Hello
+   	Hello 
+
+   Number of runs must be > 0. If number of runs ==  0, nothing happens.
+   If number of runs is < 0 => ValueError
+
+   	
+3. Create decorator 'save', that saves output from decorated function to a file
+   Decorator has two parameters:
+	file - file name ( default = decorated-function-name.out )
+	append - if True, append to file ( default = False )
+   If decorated function doesn't return anything -> TypeError
+
+   	@save(file='add.out', append=True)
+	def add(a,b):
+		return a + b
+
+	add(1,2)	
+
+	# cat add.out
+	function: add
+	timestamp: 158281812
+	=====  data  ====
+	3
+	== end of data ==
+
+4. Create decorator 'compareWith' that compares decorated function's result with
+   a reference code. If the comparison is False and 'exception' parameter
+   is True -> ValueError
+
+	def compute(a,b):
+		return a + b
+
+	@compareWith(compute,exception=True)
+	def add(a, b):
+		return a + b
+
+	add(1,2)  # OK, add(1,2) == suma(1,2)
+	
+	## ----------------------------------##
+
+	def compute(a,b):
+		return a - b
+
+	@compareWith(compute,exception=True)
+	def add(a, b):
+		return a + b
+
+	add(1,2)  # !! ValueError !!, add(1,2) != suma(1,2)
+
+5. Create decorator 'compareWithAll', that compares decorated function's result with
+   results of reference functions, that are given in a tuple. 
+
+   Decorator has two parameters:
+	tuple - reference functions
+	method - match type
+		'anyMatch' - at least one match is required
+		'allMatch' - all reference functions must give the same result
+
+  	@compareWithAll((lambda a,b:a+b,lambda a,b:a-b), method='anyMatch')
+	def add(x,y):
+		return x + y
+
+	add(1,2) #  OK, matches first lambda ( 'anyMatch' )
+
+	## --------------------------------- ##
+
+	@compareWithAll((lambda a,b:a+b, lambda a,b:a-b), method='allMatch')
+	def add(x,y):
+		return x + y
+
+	add(1,2) # MatcheError, second lambda's result is different ( 'allMatch' )
+
+
+	
