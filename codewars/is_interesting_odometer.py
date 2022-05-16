@@ -51,23 +51,30 @@ def is_interesting(number, awesome_phrases):
 
     regexps = []
 
-    def check_is_coming_soon(regexp, num):
-        if regexp.match(str(num + 2)) or regexp.match(str(num + 1)):
-            print("Yellow for", num)
-            return True
-        return False
-
-    def check_is_interesting(regexp, num):
+    def regexp_is_interesting(regexp, num):
         if regexp.match(str(num)):
-            print("Green for", num)
+            print(num, "2 match ", regexp)
             return True
         return False
 
-    # followed by all 0s
-    regexps.append(re.compile(r"^\d0{2,}$"))
+    def regexp_is_coming_soon(regexp, num):
+        if regexp.match(str(num + 2)) or regexp.match(str(num + 1)):
+            print(num, "1 match ", regexp)
+            return True
+        return False
+
+    # initial checks (how the fuck 98-99 can be interesting??)
+    if number < 98:
+        return 0
 
     # same numbers
-    regexps.append(re.compile(r"^(\d)\1{2,}$"))
+    regexps.append(re.compile(r"^(\d)\1+$"))
+
+    # followed by all 0s
+    regexps.append(re.compile(r"^\d[0]+$"))
+
+    # !!! simplier solution:
+    # def is_round(number):        return set(str(number)[1:]) == set('0')
 
     # increasing sequence
     regexps.append(
@@ -85,32 +92,38 @@ def is_interesting(number, awesome_phrases):
         )
     )
 
+    # !!! From codewars answers!!!
+    # simplier solution:
+    # def is_incrementing(number): return str(number) in '1234567890'
+    # def is_decrementing(number): return str(number) in '9876543210'
+
+    for regexp in regexps:
+        if regexp_is_interesting(regexp, number):
+            return 2
+        elif regexp_is_coming_soon(regexp, number):
+            return 1
+
     # palindrome
     if str(number) == str(number)[-1::-1]:
-        print("Green for", number)
+        print(number, "is palindrome")
         return 2
     elif str(number + 1) == str(number + 1)[-1::-1] or str(number + 2) == str(number + 2)[-1::-1]:
-        print("Yellow for", number)
+        print(number, "is about to palindrome")
         return 1
 
     # is in awesome_phrases
     if number in awesome_phrases:
-        print("Green for awesome", number)
+        print(number, "is in awesome")
         return 2
     elif any(n in (number + 1, number + 2) for n in awesome_phrases):
-        print("Yellow for awesome", number)
+        print(number, "is about to awesome")
         return 1
 
-    for regexp in regexps:
-        if check_is_interesting(regexp, number):
-            return 2
-        elif check_is_coming_soon(regexp, number):
-            return 1
-
-    print("Nothing for", number)
     return 0
 
 
+print(is_interesting(9999999, []))
+print(is_interesting(100, []))
 print(is_interesting(11207, []))
 print(is_interesting(898, []))
 print(is_interesting(899, []))
