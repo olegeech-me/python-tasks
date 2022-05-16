@@ -36,43 +36,78 @@ is_interesting(11211, []) # 2
 is_interesting(1335, [1337, 256]) # 1
 is_interesting(1336, [1337, 256]) # 1
 is_interesting(1337, [1337, 256]) # 2
+
+Error Checking:
+A number is only interesting if it is greater than 99!
+Input will always be an integer greater than 0, and less than 1,000,000,000.
+The awesomePhrases array will always be provided, and will always be an array, but may be empty. (Not everyone thinks numbers spell funny words...)
+You should only ever output 0, 1, or 2.
 """
 
 import re
 
 
 def is_interesting(number, awesome_phrases):
+
+    regexps = []
+
     def check_is_coming_soon(regexp, num):
         if regexp.match(str(num + 2)) or regexp.match(str(num + 1)):
             print("Yellow for", num)
-            return 1
+            return True
+        return False
 
     def check_is_interesting(regexp, num):
         if regexp.match(str(num)):
             print("Green for", num)
-            return 2
+            return True
+        return False
 
     # followed by all 0s
-    regexp = re.compile(r"^\d0{2,}$")
-    check_is_interesting(regexp, number)
-    check_is_coming_soon(regexp, number)
+    regexps.append(re.compile(r"^\d0{2,}$"))
 
     # same numbers
-    regexp = re.compile(r"^(\d)\1{2,}$")
-    check_is_interesting(regexp, number)
-    check_is_coming_soon(regexp, number)
+    regexps.append(re.compile(r"^(\d)\1{2,}$"))
 
     # increasing sequence
-    regexp = re.compile(r"^0*1*2*3*4*5*6*7*8*9*$")
-    check_is_interesting(regexp, number)
-    check_is_coming_soon(regexp, number)
+    regexps.append(
+        re.compile(
+            r"^(?:1(?=2|$))?(?:2(?=3|$))?(?:3(?=4|$))?(?:4(?=5|$))?"
+            + r"(?:5(?=6|$))?(?:6(?=7|$))?(?:7(?=8|$))?(?:8(?=9|$))?(?:9(?=0|$))?0?$"
+        )
+    )
 
-    def is_palindrome(num):
-        pass
+    # decreasing sequence
+    regexps.append(
+        re.compile(
+            r"^(?:9(?=8|$))?(?:8(?=7|$))?(?:7(?=6|$))?(?:6(?=5|$))?"
+            + r"(?:5(?=4|$))?(?:4(?=3|$))?(?:3(?=2|$))?(?:2(?=1|$))?(?:1(?=0|$))?0?$"
+        )
+    )
 
-    def is_in_awesome_phrases(num):
-        pass
+    # palindrome
+    if str(number) == str(number)[-1::-1]:
+        print("Green for", number)
+        return 2
+    elif str(number + 1) == str(number + 1)[-1::-1] or str(number + 2) == str(number + 2)[-1::-1]:
+        print("Yellow for", number)
+        return 1
 
+    # is in awesome_phrases
+    if number in awesome_phrases:
+        print("Green for awesome", number)
+        return 2
+    elif any(n in (number + 1, number + 2) for n in awesome_phrases):
+        print("Yellow for awesome", number)
+        return 1
+
+    for regexp in regexps:
+        if check_is_interesting(regexp, number):
+            return 2
+        elif check_is_coming_soon(regexp, number):
+            return 1
+
+    print("Nothing for", number)
     return 0
 
 
@@ -80,3 +115,7 @@ print(is_interesting(11207, []))
 print(is_interesting(898, []))
 print(is_interesting(899, []))
 print(is_interesting(5555, []))
+print(is_interesting(1234, []))
+print(is_interesting(543210, []))
+print(is_interesting(9370739, []))
+print(is_interesting(100500, [123, 100500]))
